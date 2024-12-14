@@ -1,0 +1,123 @@
+@import url(./font-faces.css);
+
+:root {
+  --back: #0d0d1a;
+  --white: #ffffff;
+  --blue: #426d9e;
+  --button-bg: #4bb3f911;
+  --button-hover: #030389;
+  --button-active: #0529b9;
+  --text-color: #577ca7;
+  --highlight: #5a98df;
+  --transparent: #ffffff00;
+  --setting-text: #5a98df;
+}
+
+html,
+body {
+  direction: rtl;
+  font-family: "vazir";
+  line-height: 1.7;
+  font-size: 13px;
+  padding: 5px;
+}
+
+body {
+  background-color: var(--back);
+  width: 250px;
+  overflow-x: hidden;
+}
+
+body.firefox {
+  padding-left: 20px;
+}
+
+.logo {
+  font-size: 14px;
+  width: auto;
+  margin-bottom: 35px;
+  text-align: center;
+}
+
+.logo a {
+  text-decoration: none;
+}
+
+.logo small {
+  display: block;
+  color: var(--blue);
+}
+
+.logo span {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--blue);
+}
+
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+button {
+  border-radius: 10px;
+  color: var(--blue);
+  font-family: "vazir";
+  border-width: 0;
+  background-color: var(--button-bg);
+  padding: 4px 0px;
+  flex: 1 1 calc(50% - 7px);
+  transition: 1500ms ease-in-out;
+}
+
+.setting-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 0px;
+  flex: auto;
+  margin-top: 5px;
+  border: 1px solid var(--blue);
+  border-radius: 20px;
+}
+
+button:not(.active):hover:not(.square) {
+  font-weight: 900;
+  cursor: pointer;
+  scale: 103%;
+  transition: 250ms ease-in-out;
+  color: var(--highlight);
+  background-color: var(--button-hover);
+}
+
+.setting-buttons button:hover:not(.square) {
+  background-color: var(--transparent);
+  scale: 160%;
+  /* font-size: 120%; */
+}
+
+.setting-buttons button {
+  background-color: var(--transparent);
+  color: var(--setting-text);
+  font-weight: 900;
+  font-size: 105%;
+  flex: 1 1 calc(33% - 10px);
+  padding: 5px 10px;
+}
+
+.square {
+  border-radius: 0;
+}
+
+button.active {
+  transition: 250ms ease-in-out;
+  font-weight: 900;
+  scale: 100%;
+  background-color: var(--button-active);
+  color: var(--white);
+  font-weight: bold;
+}
+
+#togglePoemWidth {
+  margin-top: 5px;
+}

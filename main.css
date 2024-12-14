@@ -1,0 +1,112 @@
+* {
+  color: bisque !important;
+}
+
+.m1 *,
+.m2 * {
+  color: cornsilk !important;
+  font-variant-ligatures: contextual !important;
+  text-rendering: optimizeLegibility !important;
+  font-feature-settings: "calt" 200, "liga" 1 !important;
+  /* font-family: Ray !important; */
+  /* font-size: 1rem !important; */
+  /* line-height: normal !important; */
+  /* text-align-last: justify; */
+}
+
+.poem * {
+  background: none !important;
+}
+
+.b {
+  color: red;
+}
+
+body {
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+
+#main , .footer-contents {
+  background: rgba(0, 0, 0, 0.655) !important;
+  background-blend-mode: multiply !important;
+}
+
+.ganjoor-comment , #century , .inlinesimi{
+  background: rgba(0, 0, 0, 0.295) !important;
+  background-blend-mode: multiply !important;
+  border: 1px solid #898989 !important;
+  width: 100%;
+}
+
+.pagebutton {
+  border: 1px solid #898989 !important;
+}
+
+.comment-author {
+  background-color: rgb(46, 12, 2) !important;
+}
+
+.poem {
+  background: rgba(10, 10, 10, 0.65) !important;
+  background-image: url("/image/pbk-b.jpg") top center repeat scroll !important;
+  border-color: darkgray !important;
+  background-blend-mode: multiply !important;
+  /* backdrop-filter: blur(2px) !important; */
+}
+
+div {
+  border-color: burlywood !important;
+  border-width: 1px !important;
+}
+
+.clear-both,
+.tooltip {
+  background-color: black !important;
+}
+
+a {
+  -webkit-text-fill-color: bisque !important;
+}
+
+.clear-both.utilbar {
+  background: none !important;
+}
+
+.pagebutton,
+.w3tooltip.cursor-pointer.recitation-button {
+  background-color: rgb(38, 2, 70) !important;
+}
+.noborder-btn,
+#comments {
+  background: none !important;
+  background-color: none !important;
+}
+
+#rpoems > div.century {
+  background-color: rgb(0, 27, 13) !important;
+}
+
+#rpoems {
+  background-color: none !important;
+}
+select,
+input {
+  color: rgb(5, 173, 145) !important;
+  background: black !important;
+  border-color: burlywood !important;
+  border-width: 1px !important;
+}
+
+.notice,
+td,
+.commentquote {
+  background: rgba(0, 0, 0, 0.763) !important;
+}
+
+.bnum {
+  mix-blend-mode: hard-light !important;
+}
+
+.clear-both {
+  background: none !important;
+}

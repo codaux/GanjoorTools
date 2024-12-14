@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+
+  <body>
+    <div
+      ng-app="fontIranApp"
+      ng-controller="bodyCtrl"
+      class="d-flex flex-column"
+    >
+      <div class="logo">
+        <a href="https://rezasamani.ir/" target="_blank">
+          <span> گنجوریار </span>
+          <small>امکانات اضافی گنجور</small>
+        </a>
+      </div>
+      <div class="button-container">
+        <button type="button" font-name="Parastoo" id="Setmyfont">پرستو</button>
+        <button type="button" font-name="Ray" id="Setmyfont">فونت ری</button>
+        <button type="button" font-name="ganj" id="Setmyfont">گنجنامه</button>
+        <button type="button" font-name="nas" id="Setmyfont">
+          ایران نستعلیق
+        </button>
+        <button type="button" font-name="yekan" id="Setmyfont">یکان</button>
+        <button type="button" font-name="naskh" id="Setmyfont">نسخ</button>
+        <button type="button" font-name="vazir" id="Setmyfont">وزیرمتن</button>
+        <button type="button" font-name="iran" id="Setmyfont">ایران</button>
+        <button type="button" font-name="gandom" id="Setmyfont">گندم</button>
+        <button type="button" font-name="rooznameh" id="Setmyfont">روزنامه</button>
+        <button type="button" font-name="shablon" id="Setmyfont">شابلون</button>
+        <button type="button" font-name="gulzar" id="Setmyfont">گلزار</button>
+        <div class="setting-buttons">
+          <button type="button" id="increaseFontSize">+</button>
+          <button class="square" type="button" id="not">اندازه فونت</button>
+          <button type="button" id="decreaseFontSize">-</button>
+        </div>
+        <div class="setting-buttons">
+          <button type="button" id="increaseLineHeight">+</button>
+          <button class="square" type="button" id="not">ارتفاع سطر</button>
+          <button type="button" id="decreaseLineHeight">-</button>
+        </div>
+        <button id="togglePoemWidth">عریض‌سازی شعر</button>
+      </div>
+    </div>
+    <script src="assets/scripts/jquery-3.3.1.min.js"></script>
+    <script src="assets/scripts/angular.min.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
