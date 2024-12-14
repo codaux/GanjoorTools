@@ -1,10 +1,4 @@
-<style>
-    @import url(./font-faces.css);
-    * {
-        font-family: "iran";
-        tex-direction: rtl;
-    }
-</style>
+
 
 <div align="center">
     <img src="logo\logo-128.png"/>
