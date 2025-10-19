@@ -22,8 +22,14 @@
     },
     "content_scripts": [
       {
-        "css": ["main.css","font-faces.css"],
+        "css": ["font-faces.css"],
         "js": ["foreground.js","content.js"],
+        "matches": ["https://ganjoor.net/*"]
+      }
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": ["main.css"],
         "matches": ["https://ganjoor.net/*"]
       }
     ]
