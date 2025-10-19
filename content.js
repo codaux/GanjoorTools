@@ -13,6 +13,62 @@ const FONT_BUTTONS = [
   { value: "gulzar", label: "گلزار" },
 ];
 
+const DARK_MODE_STORAGE_KEY = "isDarkModeEnabled";
+const DARK_MODE_STYLESHEET_ID = "ganjoor-dark-mode-stylesheet";
+
+function setDarkMode(isEnabled) {
+  const existingStylesheet = document.getElementById(DARK_MODE_STYLESHEET_ID);
+
+  if (isEnabled) {
+    if (existingStylesheet) {
+      return;
+    }
+
+    const link = document.createElement("link");
+    link.id = DARK_MODE_STYLESHEET_ID;
+    link.rel = "stylesheet";
+    link.href = chrome.runtime.getURL("main.css");
+
+    const target = document.head;
+    if (target) {
+      target.appendChild(link);
+    } else {
+      const handleDomReady = function () {
+        document.removeEventListener("DOMContentLoaded", handleDomReady);
+        chrome.storage.sync.get([DARK_MODE_STORAGE_KEY], function (data) {
+          const storedValue = data[DARK_MODE_STORAGE_KEY];
+          const shouldEnable =
+            typeof storedValue === "undefined"
+              ? true
+              : Boolean(storedValue);
+
+          if (shouldEnable) {
+            setDarkMode(true);
+          }
+        });
+      };
+
+      document.addEventListener("DOMContentLoaded", handleDomReady);
+    }
+  } else if (existingStylesheet) {
+    existingStylesheet.remove();
+  }
+}
+
+function applyDarkModeSetting() {
+  chrome.storage.sync.get([DARK_MODE_STORAGE_KEY], function (data) {
+    const storedValue = data[DARK_MODE_STORAGE_KEY];
+    const isEnabled =
+      typeof storedValue === "undefined" ? true : Boolean(storedValue);
+
+    if (typeof storedValue === "undefined") {
+      chrome.storage.sync.set({ [DARK_MODE_STORAGE_KEY]: true });
+    }
+
+    setDarkMode(isEnabled);
+  });
+}
+
 function applyStoredFontSettings() {
   chrome.storage.sync.get(
     ["selectedFont", "fontSize", "lineHeight"],
@@ -271,6 +327,9 @@ function createFloatingSettingsMenu() {
     <div class="ganjoor-settings-group">
       <button type="button" class="ganjoor-toggle-width" data-action="toggle-width">عریض‌سازی شعر</button>
     </div>
+    <div class="ganjoor-settings-group">
+      <button type="button" class="ganjoor-toggle-width ganjoor-dark-toggle" data-action="toggle-dark-mode">حالت تاریک</button>
+    </div>
   `;
 
   container.appendChild(panel);
@@ -281,6 +340,7 @@ function createFloatingSettingsMenu() {
   const fontDisplay = panel.querySelector('[data-display="font-size"]');
   const lineDisplay = panel.querySelector('[data-display="line-height"]');
   const widthToggle = panel.querySelector('[data-action="toggle-width"]');
+  const darkModeToggle = panel.querySelector('[data-action="toggle-dark-mode"]');
 
   FONT_BUTTONS.forEach((font) => {
     const button = document.createElement("button");
@@ -323,6 +383,18 @@ function createFloatingSettingsMenu() {
       widthToggle.classList.add("ganjoor-active");
     } else {
       widthToggle.classList.remove("ganjoor-active");
+    }
+  }
+
+  function updateDarkModeToggle(isEnabled) {
+    if (!darkModeToggle) {
+      return;
+    }
+
+    if (isEnabled) {
+      darkModeToggle.classList.add("ganjoor-active");
+    } else {
+      darkModeToggle.classList.remove("ganjoor-active");
     }
   }
 
@@ -392,6 +464,26 @@ function createFloatingSettingsMenu() {
     });
   });
 
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener("click", function () {
+      chrome.storage.sync.get([DARK_MODE_STORAGE_KEY], function (data) {
+        const currentValue =
+          typeof data[DARK_MODE_STORAGE_KEY] === "undefined"
+            ? true
+            : Boolean(data[DARK_MODE_STORAGE_KEY]);
+        const newValue = !currentValue;
+
+        chrome.storage.sync.set(
+          { [DARK_MODE_STORAGE_KEY]: newValue },
+          function () {
+            updateDarkModeToggle(newValue);
+            setDarkMode(newValue);
+          }
+        );
+      });
+    });
+  }
+
   toggleButton.addEventListener("click", function () {
     const isHidden = panel.hasAttribute("hidden");
     if (isHidden) {
@@ -404,17 +496,33 @@ function createFloatingSettingsMenu() {
   });
 
   chrome.storage.sync.get(
-    ["selectedFont", "fontSize", "lineHeight", "isPoemWidthLimited"],
+    [
+      "selectedFont",
+      "fontSize",
+      "lineHeight",
+      "isPoemWidthLimited",
+      DARK_MODE_STORAGE_KEY,
+    ],
     function (data) {
       const selectedFont = data.selectedFont || "Parastoo";
       const fontSize = data.fontSize || "16px";
       const lineHeight = data.lineHeight || "1.7";
       const isLimited = !!data.isPoemWidthLimited;
+      const storedDarkModeValue = data[DARK_MODE_STORAGE_KEY];
+      const isDarkModeEnabled =
+        typeof storedDarkModeValue === "undefined"
+          ? true
+          : Boolean(storedDarkModeValue);
 
       updateActiveFontButton(selectedFont);
       updateFontSizeDisplay(fontSize);
       updateLineHeightDisplay(lineHeight);
       updateWidthToggle(isLimited);
+      updateDarkModeToggle(isDarkModeEnabled);
+
+      if (typeof storedDarkModeValue === "undefined") {
+        chrome.storage.sync.set({ [DARK_MODE_STORAGE_KEY]: true });
+      }
     }
   );
 
@@ -452,6 +560,17 @@ function createFloatingSettingsMenu() {
       updateWidthToggle(isLimited);
       applyPoemWidthSetting();
     }
+
+    if (Object.prototype.hasOwnProperty.call(changes, DARK_MODE_STORAGE_KEY)) {
+      const darkModeChange = changes[DARK_MODE_STORAGE_KEY];
+      const isEnabled =
+        typeof darkModeChange.newValue === "undefined"
+          ? true
+          : Boolean(darkModeChange.newValue);
+
+      updateDarkModeToggle(isEnabled);
+      setDarkMode(isEnabled);
+    }
   });
 
   document.addEventListener("click", function (event) {
@@ -464,6 +583,7 @@ function createFloatingSettingsMenu() {
 
 applyStoredFontSettings();
 applyPoemWidthSetting();
+applyDarkModeSetting();
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", createFloatingSettingsMenu);
