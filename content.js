@@ -13,62 +13,6 @@ const FONT_BUTTONS = [
   { value: "gulzar", label: "گلزار" },
 ];
 
-const DARK_MODE_STORAGE_KEY = "isDarkModeEnabled";
-const DARK_MODE_STYLESHEET_ID = "ganjoor-dark-mode-stylesheet";
-
-function setDarkMode(isEnabled) {
-  const existingStylesheet = document.getElementById(DARK_MODE_STYLESHEET_ID);
-
-  if (isEnabled) {
-    if (existingStylesheet) {
-      return;
-    }
-
-    const link = document.createElement("link");
-    link.id = DARK_MODE_STYLESHEET_ID;
-    link.rel = "stylesheet";
-    link.href = chrome.runtime.getURL("main.css");
-
-    const target = document.head;
-    if (target) {
-      target.appendChild(link);
-    } else {
-      const handleDomReady = function () {
-        document.removeEventListener("DOMContentLoaded", handleDomReady);
-        chrome.storage.sync.get([DARK_MODE_STORAGE_KEY], function (data) {
-          const storedValue = data[DARK_MODE_STORAGE_KEY];
-          const shouldEnable =
-            typeof storedValue === "undefined"
-              ? true
-              : Boolean(storedValue);
-
-          if (shouldEnable) {
-            setDarkMode(true);
-          }
-        });
-      };
-
-      document.addEventListener("DOMContentLoaded", handleDomReady);
-    }
-  } else if (existingStylesheet) {
-    existingStylesheet.remove();
-  }
-}
-
-function applyDarkModeSetting() {
-  chrome.storage.sync.get([DARK_MODE_STORAGE_KEY], function (data) {
-    const storedValue = data[DARK_MODE_STORAGE_KEY];
-    const isEnabled =
-      typeof storedValue === "undefined" ? true : Boolean(storedValue);
-
-    if (typeof storedValue === "undefined") {
-      chrome.storage.sync.set({ [DARK_MODE_STORAGE_KEY]: true });
-    }
-
-    setDarkMode(isEnabled);
-  });
-}
-
 function applyStoredFontSettings() {
   chrome.storage.sync.get(
     ["selectedFont", "fontSize", "lineHeight"],
@@ -113,13 +57,15 @@ function createSettingsStyleElement() {
       align-items: flex-end;
       gap: 8px;
       z-index: 2147483647;
+      font-family: "Parastoo", sans-serif;
       direction: rtl;
-      font-family: "vazir", sans-serif;
-      color: #577ca7;
     }
 
     #ganjoor-floating-settings * {
       box-sizing: border-box;
+    }
+
+    #ganjoor-floating-settings button {
       font-family: inherit;
     }
 
@@ -127,36 +73,31 @@ function createSettingsStyleElement() {
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      border: 1px solid #426d9e;
-      background-color: #0d0d1a;
-      color: #5a98df;
+      border: none;
+      background: linear-gradient(135deg, #4e0e8d, #8c43ff);
+      color: #fff;
       font-size: 20px;
       cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 6px 16px rgba(3, 3, 137, 0.35);
-      transition: background-color 0.2s ease, color 0.2s ease;
-    }
-
-    #ganjoor-floating-settings .ganjoor-settings-toggle:hover {
-      background-color: #030389;
-      color: #ffffff;
     }
 
     #ganjoor-floating-settings .ganjoor-settings-toggle:focus {
-      outline: 2px solid #5a98df;
+      outline: 2px solid #c7a4ff;
       outline-offset: 2px;
     }
 
     #ganjoor-floating-settings .ganjoor-settings-panel {
-      width: min(300px, calc(100vw - 32px));
-      background-color: #0d0d1a;
-      border: 1px solid #426d9e;
+      width: min(320px, calc(100vw - 32px));
+      background: rgba(20, 20, 20, 0.95);
+      color: #f4f4f4;
       border-radius: 16px;
       padding: 16px;
-      box-shadow: 0 12px 32px rgba(3, 3, 137, 0.35);
-      color: inherit;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     #ganjoor-floating-settings .ganjoor-settings-panel[hidden] {
@@ -164,10 +105,9 @@ function createSettingsStyleElement() {
     }
 
     #ganjoor-floating-settings h3 {
-      margin: 0 0 16px;
+      margin: 0 0 12px 0;
+      font-size: 18px;
       text-align: center;
-      font-size: 16px;
-      color: #5a98df;
     }
 
     #ganjoor-floating-settings .ganjoor-settings-group {
@@ -180,52 +120,43 @@ function createSettingsStyleElement() {
 
     #ganjoor-floating-settings .ganjoor-group-title {
       display: block;
+      font-size: 14px;
       margin-bottom: 8px;
-      color: #5a98df;
-      font-size: 13px;
-      font-weight: 700;
+      color: #d7c5ff;
     }
 
     #ganjoor-floating-settings .ganjoor-font-buttons {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
       gap: 6px;
     }
 
     #ganjoor-floating-settings .ganjoor-font-button {
-      flex: 1 1 calc(50% - 6px);
       border-radius: 10px;
-      border: none;
-      padding: 6px 0;
-      background-color: rgba(75, 179, 249, 0.07);
-      color: #426d9e;
-      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 6px 10px;
       font-size: 13px;
-      font-weight: 600;
-      transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+      background: rgba(255, 255, 255, 0.04);
+      color: inherit;
+      cursor: pointer;
+      transition: background 0.2s ease, border 0.2s ease, transform 0.15s ease;
     }
 
     #ganjoor-floating-settings .ganjoor-font-button:hover {
-      background-color: #030389;
-      color: #5a98df;
-      transform: scale(1.03);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     #ganjoor-floating-settings .ganjoor-font-button.ganjoor-active {
-      background-color: #0529b9;
-      color: #ffffff;
-      font-weight: 700;
-      transform: none;
+      border-color: #c59cff;
+      background: rgba(140, 67, 255, 0.18);
+      transform: translateY(-1px);
     }
 
     #ganjoor-floating-settings .ganjoor-control-row {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 8px;
-      border: 1px solid #426d9e;
-      border-radius: 20px;
-      padding: 4px 8px;
-      background-color: rgba(75, 179, 249, 0.07);
     }
 
     #ganjoor-floating-settings .ganjoor-control-row button {
@@ -233,23 +164,23 @@ function createSettingsStyleElement() {
       height: 32px;
       border-radius: 8px;
       border: none;
-      background-color: transparent;
-      color: #5a98df;
+      background: rgba(255, 255, 255, 0.12);
+      color: inherit;
       font-size: 18px;
       cursor: pointer;
-      transition: color 0.2s ease, transform 0.2s ease;
+      transition: background 0.2s ease;
     }
 
     #ganjoor-floating-settings .ganjoor-control-row button:hover {
-      color: #ffffff;
-      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.2);
     }
 
     #ganjoor-floating-settings .ganjoor-control-label {
       flex: 1 1 auto;
       text-align: center;
-      color: #5a98df;
-      font-weight: 700;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 6px 10px;
       font-size: 13px;
     }
 
@@ -258,23 +189,17 @@ function createSettingsStyleElement() {
       border: none;
       border-radius: 10px;
       padding: 8px 12px;
-      background-color: rgba(75, 179, 249, 0.07);
-      color: #426d9e;
+      background: rgba(140, 67, 255, 0.18);
+      color: inherit;
       font-size: 14px;
-      font-weight: 700;
       cursor: pointer;
-      transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-    }
-
-    #ganjoor-floating-settings .ganjoor-toggle-width:hover {
-      background-color: #030389;
-      color: #5a98df;
-      transform: scale(1.03);
+      transition: background 0.2s ease, border 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.18);
     }
 
     #ganjoor-floating-settings .ganjoor-toggle-width.ganjoor-active {
-      background-color: #0529b9;
-      color: #ffffff;
+      background: rgba(92, 214, 174, 0.24);
+      border-color: rgba(92, 214, 174, 0.5);
     }
   `;
 
@@ -327,9 +252,6 @@ function createFloatingSettingsMenu() {
     <div class="ganjoor-settings-group">
       <button type="button" class="ganjoor-toggle-width" data-action="toggle-width">عریض‌سازی شعر</button>
     </div>
-    <div class="ganjoor-settings-group">
-      <button type="button" class="ganjoor-toggle-width ganjoor-dark-toggle" data-action="toggle-dark-mode">حالت تاریک</button>
-    </div>
   `;
 
   container.appendChild(panel);
@@ -340,7 +262,6 @@ function createFloatingSettingsMenu() {
   const fontDisplay = panel.querySelector('[data-display="font-size"]');
   const lineDisplay = panel.querySelector('[data-display="line-height"]');
   const widthToggle = panel.querySelector('[data-action="toggle-width"]');
-  const darkModeToggle = panel.querySelector('[data-action="toggle-dark-mode"]');
 
   FONT_BUTTONS.forEach((font) => {
     const button = document.createElement("button");
@@ -383,18 +304,6 @@ function createFloatingSettingsMenu() {
       widthToggle.classList.add("ganjoor-active");
     } else {
       widthToggle.classList.remove("ganjoor-active");
-    }
-  }
-
-  function updateDarkModeToggle(isEnabled) {
-    if (!darkModeToggle) {
-      return;
-    }
-
-    if (isEnabled) {
-      darkModeToggle.classList.add("ganjoor-active");
-    } else {
-      darkModeToggle.classList.remove("ganjoor-active");
     }
   }
 
@@ -464,26 +373,6 @@ function createFloatingSettingsMenu() {
     });
   });
 
-  if (darkModeToggle) {
-    darkModeToggle.addEventListener("click", function () {
-      chrome.storage.sync.get([DARK_MODE_STORAGE_KEY], function (data) {
-        const currentValue =
-          typeof data[DARK_MODE_STORAGE_KEY] === "undefined"
-            ? true
-            : Boolean(data[DARK_MODE_STORAGE_KEY]);
-        const newValue = !currentValue;
-
-        chrome.storage.sync.set(
-          { [DARK_MODE_STORAGE_KEY]: newValue },
-          function () {
-            updateDarkModeToggle(newValue);
-            setDarkMode(newValue);
-          }
-        );
-      });
-    });
-  }
-
   toggleButton.addEventListener("click", function () {
     const isHidden = panel.hasAttribute("hidden");
     if (isHidden) {
@@ -496,33 +385,17 @@ function createFloatingSettingsMenu() {
   });
 
   chrome.storage.sync.get(
-    [
-      "selectedFont",
-      "fontSize",
-      "lineHeight",
-      "isPoemWidthLimited",
-      DARK_MODE_STORAGE_KEY,
-    ],
+    ["selectedFont", "fontSize", "lineHeight", "isPoemWidthLimited"],
     function (data) {
       const selectedFont = data.selectedFont || "Parastoo";
       const fontSize = data.fontSize || "16px";
       const lineHeight = data.lineHeight || "1.7";
       const isLimited = !!data.isPoemWidthLimited;
-      const storedDarkModeValue = data[DARK_MODE_STORAGE_KEY];
-      const isDarkModeEnabled =
-        typeof storedDarkModeValue === "undefined"
-          ? true
-          : Boolean(storedDarkModeValue);
 
       updateActiveFontButton(selectedFont);
       updateFontSizeDisplay(fontSize);
       updateLineHeightDisplay(lineHeight);
       updateWidthToggle(isLimited);
-      updateDarkModeToggle(isDarkModeEnabled);
-
-      if (typeof storedDarkModeValue === "undefined") {
-        chrome.storage.sync.set({ [DARK_MODE_STORAGE_KEY]: true });
-      }
     }
   );
 
@@ -560,17 +433,6 @@ function createFloatingSettingsMenu() {
       updateWidthToggle(isLimited);
       applyPoemWidthSetting();
     }
-
-    if (Object.prototype.hasOwnProperty.call(changes, DARK_MODE_STORAGE_KEY)) {
-      const darkModeChange = changes[DARK_MODE_STORAGE_KEY];
-      const isEnabled =
-        typeof darkModeChange.newValue === "undefined"
-          ? true
-          : Boolean(darkModeChange.newValue);
-
-      updateDarkModeToggle(isEnabled);
-      setDarkMode(isEnabled);
-    }
   });
 
   document.addEventListener("click", function (event) {
@@ -583,7 +445,6 @@ function createFloatingSettingsMenu() {
 
 applyStoredFontSettings();
 applyPoemWidthSetting();
-applyDarkModeSetting();
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", createFloatingSettingsMenu);
